@@ -56,3 +56,21 @@ export const mockCreatedSession = (Session) => {
     expiresAt: 14 * 24 * 60 * 60,
   });
 };
+
+export const mockResponse = () => {
+  const res = {};
+
+  res.status = vi.fn().mockReturnValue(res);
+  res.json = vi.fn().mockReturnValue(res);
+
+  res.sendStatus = vi.fn();
+  res.clearCookie = vi.fn();
+
+  return res;
+};
+
+export const mockDeletedSession = (Session) => {
+  vi.spyOn(Session, "deleteOne").mockResolvedValue({
+    deleteCount: 1,
+  });
+};

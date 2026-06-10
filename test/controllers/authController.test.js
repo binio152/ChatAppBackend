@@ -1,5 +1,5 @@
 import { describe, expect, vi, beforeEach, test } from "vitest";
-import { signUp } from "../../src/controllers/authController.js";
+import { signOut, signUp } from "../../src/controllers/authController.js";
 import request from "supertest";
 import server from "../../src/server.js";
 import User from "../../src/models/User.js";
@@ -19,6 +19,8 @@ import {
   mockNotExistingUser,
   mockPasswordMatch,
   mockPasswordMissMatch,
+  mockResponse,
+  mockDeletedSession,
 } from "./mockAuthController.js";
 
 const createdUser = (fields) => ({
@@ -116,8 +118,6 @@ describe("authController.signIn", () => {
       .post("/api/auth/signin")
       .send({ username: "username", password: "password" });
 
-    console.log(res);
-
     expect(res.status).toBe(401);
     expect(res.body.message).toMatch(/invalid username or password/i);
   });
@@ -143,5 +143,26 @@ describe("authController.signIn", () => {
 
     expect(res.status).toBe(500);
     expect(res.body.message).toMatch(/internal server error/i);
+  });
+});
+
+describe("authController.signOut", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  test("should sign out and delete session and clear cookie successfully", async () => {
+    const req = { cookies: { refreshToken: "refresh-token" } };
+    const res = mockResponse();
+
+    mockDeletedSession(Session);
+
+    await signOut(req, res);
+
+    expect(Session.deleteOne).toHaveBeenCalledWith({
+      refreshToken: "refresh-token",
+    });
+    expect(res.clearCookie).toHaveBeenCalledWith("refreshToken");
+    expect(res.sendStatus).toHaveBeenCalledWith(204);
   });
 });
