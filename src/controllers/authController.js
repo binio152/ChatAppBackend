@@ -62,17 +62,17 @@ export const signIn = async (req, res) => {
     );
 
     const refreshToken = crypto.randomBytes(32).toString("hex");
-
+    const refreshTokenTTL = Number(process.env.REFRESH_TOKEN_TTL);
     const session = await Session.create({
       userId: user._id,
       refreshToken,
-      expiresAt: process.env.REFRESH_TOKEN_TTL,
+      expiresAt: new Date(Date.now() + refreshTokenTTL),
     });
 
     res.cookie("refresh-token", refreshToken, {
       httpOnly: true,
       secure: true,
-      samSite: "none",
+      sameSite: "none",
       maxAge: process.env.REFRESH_TOKEN_TTL,
     });
 

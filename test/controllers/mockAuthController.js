@@ -1,6 +1,6 @@
 import { vi } from "vitest";
 import bcrypt from "bcrypt";
-import crypto from "crypto";
+import crypto, { randomBytes } from "crypto";
 import jwt from "jsonwebtoken";
 
 export const mockHashedPassword = () => {
@@ -44,11 +44,15 @@ export const mockCreateAccessToken = () => {
 };
 
 export const mockCreateRefreshToken = () => {
-  vi.spyOn(crypto, "randomBytes").mockReturnValue(Buffer.from("refresh-token"));
+  vi.spyOn(crypto, "randomBytes").mockReturnValue({
+    toString: () => "refresh-token",
+  });
 };
 
 export const mockCreatedSession = (Session) => {
   vi.spyOn(Session, "create").mockResolvedValue({
     _id: "session-id",
+    refreshToken: "refresh-token",
+    expiresAt: 14 * 24 * 60 * 60,
   });
 };

@@ -96,6 +96,10 @@ describe("authController.signIn", () => {
 
     expect(res.status).toBe(201);
     expect(res.body.message).toMatch(/signed in successfully/i);
+    expect(res.headers["set-cookie"]).toBeDefined();
+    expect(res.headers["set-cookie"][0]).toBe(
+      "refresh-token=refresh-token; Path=/; HttpOnly; Secure; SameSite=None",
+    );
   });
 
   test("should returns 400 when missing required fields", async () => {
