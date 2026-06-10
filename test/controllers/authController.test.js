@@ -100,7 +100,7 @@ describe("authController.signIn", () => {
     expect(res.body.message).toMatch(/signed in successfully/i);
     expect(res.headers["set-cookie"]).toBeDefined();
     expect(res.headers["set-cookie"][0]).toBe(
-      "refresh-token=refresh-token; Path=/; HttpOnly; Secure; SameSite=None",
+      "refreshToken=refreshToken; Path=/; HttpOnly; Secure; SameSite=None",
     );
   });
 
@@ -152,7 +152,7 @@ describe("authController.signOut", () => {
   });
 
   test("should sign out and delete session and clear cookie successfully", async () => {
-    const req = { cookies: { refreshToken: "refresh-token" } };
+    const req = { cookies: { refreshToken: "refreshToken" } };
     const res = mockResponse();
 
     mockDeletedSession(Session);
@@ -160,7 +160,7 @@ describe("authController.signOut", () => {
     await signOut(req, res);
 
     expect(Session.deleteOne).toHaveBeenCalledWith({
-      refreshToken: "refresh-token",
+      refreshToken: "refreshToken",
     });
     expect(res.clearCookie).toHaveBeenCalledWith("refreshToken");
     expect(res.sendStatus).toHaveBeenCalledWith(204);

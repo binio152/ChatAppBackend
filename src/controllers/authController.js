@@ -69,7 +69,7 @@ export const signIn = async (req, res) => {
       expiresAt: new Date(Date.now() + refreshTokenTTL),
     });
 
-    res.cookie("refresh-token", refreshToken, {
+    res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true,
       sameSite: "none",
@@ -100,3 +100,5 @@ export const signOut = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+

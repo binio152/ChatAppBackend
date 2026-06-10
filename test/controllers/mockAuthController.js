@@ -45,14 +45,14 @@ export const mockCreateAccessToken = () => {
 
 export const mockCreateRefreshToken = () => {
   vi.spyOn(crypto, "randomBytes").mockReturnValue({
-    toString: () => "refresh-token",
+    toString: () => "refreshToken",
   });
 };
 
 export const mockCreatedSession = (Session) => {
   vi.spyOn(Session, "create").mockResolvedValue({
     _id: "session-id",
-    refreshToken: "refresh-token",
+    refreshToken: "refreshToken",
     expiresAt: 14 * 24 * 60 * 60,
   });
 };
