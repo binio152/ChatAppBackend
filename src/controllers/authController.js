@@ -56,7 +56,7 @@ export const signIn = async (req, res) => {
     }
 
     const accessToken = jwt.sign(
-      { user: user._id },
+      { userId: user._id },
       process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: process.env.ACCESS_TOKEN_TTL },
     );
@@ -82,6 +82,22 @@ export const signIn = async (req, res) => {
     });
   } catch (err) {
     console.log("Error occurred while signing in", err);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const signOut = async (req, res) => {
+  try {
+    const token = req?.cookies?.refreshToken;
+
+    if (token) {
+      await Session.deleteOne({ refreshToken: token });
+      req.clearCookie("refreshToken");
+    }
+
+    res.sendStatus(204);
+  } catch (err) {
+    console.log("Error occurred while signing out", err);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
