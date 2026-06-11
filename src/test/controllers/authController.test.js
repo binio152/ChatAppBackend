@@ -1,9 +1,9 @@
 import { describe, expect, vi, beforeEach, test } from "vitest";
-import { signOut, signUp } from "../../src/controllers/authController.js";
+import { signOut, signUp } from "../../controllers/authController.js";
 import request from "supertest";
-import server from "../../src/server.js";
-import User from "../../src/models/User.js";
-import Session from "../../src/models/Session.js";
+import server from "../../server.js";
+import User from "../../models/User.js";
+import Session from "../../models/Session.js";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
@@ -32,7 +32,7 @@ const createdUser = (fields) => ({
   ...fields,
 });
 
-describe("authController.signUp", () => {
+describe("authController.signup", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -43,7 +43,7 @@ describe("authController.signUp", () => {
     mockCreatedUser(User);
 
     const res = await request(server)
-      .post("/api/auth/signUp")
+      .post("/api/auth/signup")
       .send(createdUser({ username: "username" }));
 
     expect(res.status).toBe(201);
@@ -52,7 +52,7 @@ describe("authController.signUp", () => {
   });
 
   test("should returns 400 when missing required fields", async () => {
-    const res = await request(server).post("/api/auth/signUp").send({});
+    const res = await request(server).post("/api/auth/signup").send({});
 
     expect(res.status).toBe(400);
     expect(res.body.message).toMatch(/Missing required fields/);
@@ -62,7 +62,7 @@ describe("authController.signUp", () => {
     mockExistingUser(User); // return { usernme: "username" }
 
     const res = await request(server)
-      .post("/api/auth/signUp")
+      .post("/api/auth/signup")
       .send(createdUser());
 
     expect(res.status).toBe(409);
@@ -73,7 +73,7 @@ describe("authController.signUp", () => {
     mockDBError(User);
 
     const res = await request(server)
-      .post("/api/auth/signUp")
+      .post("/api/auth/signup")
       .send(createdUser());
 
     expect(res.status).toBe(500);
