@@ -1,7 +1,7 @@
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import jwt from "jsonwebtoken";
-import User from "../../src/models/User.js";
-import { protectedRoute } from "../../src/middlewares/authMiddleware.js";
+import User from "../../models/User.js";
+import { protectedRoute } from "../../middlewares/authMiddleware.js";
 import {
   mockCreatedJWTFail,
   mockCreatedJWTSuccessful,

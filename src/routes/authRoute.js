@@ -3,7 +3,7 @@ import { signUp, signIn, signOut } from "../controllers/authController.js";
 
 const router = Router();
 
-router.post("/signUp", signUp);
+router.post("/signup", signUp);
 router.post("/signin", signIn);
 router.post("/signout", signOut);
 
