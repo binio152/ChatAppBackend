@@ -101,27 +101,27 @@ export const signOut = async (req, res) => {
   }
 };
 
-export const refresh = async (req, res) => {
-  try {
-    const { refreshToken } = req.cookies;
-    if (!refreshToken)
-      return res.status(401).json({ message: "No token provided" });
+  export const refresh = async (req, res) => {
+    try {
+      const { refreshToken } = req.cookies;
+      if (!refreshToken)
+        return res.status(401).json({ message: "Token is not provided" });
 
-    const session = await Session.findOne({ refreshToken });
-    if (!session)
-      return res.status(403).json({ message: "Token is invalid or expired" });
-    if (session.expiresAt < new Date())
-      return res.status(403).json({ message: "Token is invalid or expired" });
+      const session = await Session.findOne({ refreshToken });
+      if (!session)
+        return res.status(403).json({ message: "Token is invalid or expired" });
+      if (session.expiresAt < new Date())
+        return res.status(403).json({ message: "Token is invalid or expired" });
 
-    const accessToken = jwt.sign(
-      { userId: session.userId },
-      process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: process.env.ACCESS_TOKEN_TTL },
-    );
+      const accessToken = jwt.sign(
+        { userId: session.userId },
+        process.env.ACCESS_TOKEN_SECRET,
+        { expiresIn: process.env.ACCESS_TOKEN_TTL },
+      );
 
-    return res.status(200).json({ accessToken });
-  } catch (err) {
-    console.log("Error occurred while renewal token", err);
-    return res.status(500).json({ message: "Internal server error" });
-  }
-};
+      return res.status(200).json({ accessToken });
+    } catch (err) {
+      console.log("Error occurred while renewal token", err);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  };

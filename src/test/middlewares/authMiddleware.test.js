@@ -39,7 +39,7 @@ describe("authMiddleware.protectedRoute", () => {
     expect(next).not.toHaveBeenCalled();
   });
 
-  test("should returns 403 when token is invalid", async () => {
+  test("should return 403 when token is invalid", async () => {
     const req = { headers: { authorization: "Bearer token" } };
     const res = mockResponse();
     mockCreatedJWTFail();
