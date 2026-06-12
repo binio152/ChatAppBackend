@@ -36,7 +36,7 @@ server.get("/test", (req, res) => {
 
 // private routes
 server.use(protectedRoute);
-server.use("/api", userRoute);
+server.use("/api/users", userRoute);
 
 export { server };
 export default server;
