@@ -1,6 +1,6 @@
 import { describe, expect, vi, beforeEach, test } from "vitest";
-import { signOut, signUp } from "../../controllers/authController.js";
-import request from "supertest";
+import { refresh, signOut, signUp } from "../../controllers/authController.js";
+import request, { cookies } from "supertest";
 import server from "../../server.js";
 import User from "../../models/User.js";
 import Session from "../../models/Session.js";
@@ -21,7 +21,11 @@ import {
   mockPasswordMissMatch,
   mockResponse,
   mockDeletedSession,
+  mockExistingSession,
+  mockNotExistingSession,
+  mockExpiredSession,
 } from "./mockAuthController.js";
+import { mockCreatedJWTSuccessful } from "../middlewares/mockAuthMiddleware.js";
 
 const createdUser = (fields) => ({
   username: "username",
@@ -32,7 +36,7 @@ const createdUser = (fields) => ({
   ...fields,
 });
 
-describe("authController.signup", () => {
+describe("authController.signUp", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -51,14 +55,14 @@ describe("authController.signup", () => {
     expect(res.body.newUser.email).toBe("test@gmail.com");
   });
 
-  test("should returns 400 when missing required fields", async () => {
+  test("should return 400 when missing required fields", async () => {
     const res = await request(server).post("/api/auth/signup").send({});
 
     expect(res.status).toBe(400);
     expect(res.body.message).toMatch(/Missing required fields/);
   });
 
-  test("should returns 409 when username exists", async () => {
+  test("should return 409 when username exists", async () => {
     mockExistingUser(User); // return { usernme: "username" }
 
     const res = await request(server)
@@ -104,14 +108,14 @@ describe("authController.signIn", () => {
     );
   });
 
-  test("should returns 400 when missing required fields", async () => {
+  test("should return 400 when missing required fields", async () => {
     const res = await request(server).post("/api/auth/signin").send({});
 
     expect(res.status).toBe(400);
     expect(res.body.message).toMatch(/missing required fields/i);
   });
 
-  test("should returns 401 when account not exists", async () => {
+  test("should return 401 when account not exists", async () => {
     mockNotExistingUser(User);
 
     const res = await request(server)
@@ -122,7 +126,7 @@ describe("authController.signIn", () => {
     expect(res.body.message).toMatch(/invalid username or password/i);
   });
 
-  test("should returns 401 with miss matched password", async () => {
+  test("should return 401 with miss matched password", async () => {
     mockExistingUser(User);
     mockPasswordMissMatch();
 
@@ -164,5 +168,51 @@ describe("authController.signOut", () => {
     });
     expect(res.clearCookie).toHaveBeenCalledWith("refreshToken");
     expect(res.sendStatus).toHaveBeenCalledWith(204);
+  });
+});
+
+describe("authController.refresh", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  test("should return access token successfully", async () => {
+    mockExistingSession(Session);
+    mockCreateAccessToken();
+
+    const res = await request(server)
+      .post("/api/auth/refresh")
+      .set("Cookie", ["refreshToken=refreshToken"]);
+
+    expect(res.status).toBe(200);
+    expect(res.body.accessToken).toBe("accessToken");
+  });
+
+  test("should return 401 when refresh token is missing", async () => {
+    const res = await request(server).post("/api/auth/refresh");
+    expect(res.status).toBe(401);
+    expect(res.body.message).toMatch(/not provided/i);
+  });
+
+  test("should return 403 when token is invalid", async () => {
+    mockNotExistingSession(Session);
+
+    const res = await request(server)
+      .post("/api/auth/refresh")
+      .set("Cookie", ["refreshToken=refreshToken"]);
+
+    expect(res.status).toBe(403);
+    expect(res.body.message).toMatch(/invalid/i);
+  });
+
+  test("should return 403 when token is expired", async () => {
+    mockExpiredSession(Session);
+
+    const res = await request(server)
+      .post("/api/auth/refresh")
+      .set("Cookie", ["refreshToken=refreshToken"]);
+
+    expect(res.status).toBe(403);
+    expect(res.body.message).toMatch(/expired/i);
   });
 });

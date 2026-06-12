@@ -19,6 +19,7 @@ export const mockExistingUser = (User) => {
     hashedPassword: "hashedPassword",
   });
 };
+
 export const mockDBError = (User) => {
   vi.spyOn(User, "findOne").mockRejectedValue(new Error("DB error"));
 };
@@ -40,7 +41,7 @@ export const mockPasswordMissMatch = () => {
 };
 
 export const mockCreateAccessToken = () => {
-  vi.spyOn(jwt, "sign").mockReturnValue("access-token");
+  vi.spyOn(jwt, "sign").mockReturnValue("accessToken");
 };
 
 export const mockCreateRefreshToken = () => {
@@ -51,10 +52,30 @@ export const mockCreateRefreshToken = () => {
 
 export const mockCreatedSession = (Session) => {
   vi.spyOn(Session, "create").mockResolvedValue({
-    _id: "session-id",
+    _id: "sessionId",
     refreshToken: "refreshToken",
-    expiresAt: 14 * 24 * 60 * 60,
+    expiresAt: new Date(Date.now() + 1000 * 60),
   });
+};
+
+export const mockExistingSession = (Session) => {
+  vi.spyOn(Session, "findOne").mockResolvedValue({
+    _id: "sessionId",
+    refreshToken: "refreshToken",
+    expiresAt: new Date(Date.now() + 1000 * 60),
+  });
+};
+
+export const mockExpiredSession = (Session) => {
+  vi.spyOn(Session, "findOne").mockResolvedValue({
+    _id: "sessionId",
+    refreshToken: "refreshToken",
+    expiresAt: new Date(Date.now() - 1000 * 60),
+  });
+};
+
+export const mockNotExistingSession = (Session) => {
+  vi.spyOn(Session, "findOne").mockResolvedValue(null);
 };
 
 export const mockResponse = () => {
