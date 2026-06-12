@@ -109,7 +109,6 @@ export const refresh = async (req, res) => {
       return res.status(401).json({ message: "Token is not provided" });
 
     const session = await Session.findOne({ refreshToken });
-    console.log(session);
     if (!session)
       return res.status(403).json({ message: "Token is invalid or expired" });
     if (session.expiresAt < new Date(Date.now()))
