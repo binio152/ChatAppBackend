@@ -69,11 +69,12 @@ export const signIn = async (req, res) => {
       expiresAt: new Date(Date.now() + refreshTokenTTL),
     });
 
+    const isProduction = process.env.NODE_ENV === "production";
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      maxAge: process.env.REFRESH_TOKEN_TTL,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+      maxAge: Number(process.env.REFRESH_TOKEN_TTL),
     });
 
     return res.status(201).json({
@@ -101,27 +102,28 @@ export const signOut = async (req, res) => {
   }
 };
 
-  export const refresh = async (req, res) => {
-    try {
-      const { refreshToken } = req.cookies;
-      if (!refreshToken)
-        return res.status(401).json({ message: "Token is not provided" });
+export const refresh = async (req, res) => {
+  try {
+    const { refreshToken } = req.cookies;
+    if (!refreshToken)
+      return res.status(401).json({ message: "Token is not provided" });
 
-      const session = await Session.findOne({ refreshToken });
-      if (!session)
-        return res.status(403).json({ message: "Token is invalid or expired" });
-      if (session.expiresAt < new Date())
-        return res.status(403).json({ message: "Token is invalid or expired" });
+    const session = await Session.findOne({ refreshToken });
+    console.log(session);
+    if (!session)
+      return res.status(403).json({ message: "Token is invalid or expired" });
+    if (session.expiresAt < new Date(Date.now()))
+      return res.status(403).json({ message: "Token is invalid or expired" });
 
-      const accessToken = jwt.sign(
-        { userId: session.userId },
-        process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: process.env.ACCESS_TOKEN_TTL },
-      );
+    const accessToken = jwt.sign(
+      { userId: session.userId },
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: process.env.ACCESS_TOKEN_TTL },
+    );
 
-      return res.status(200).json({ accessToken });
-    } catch (err) {
-      console.log("Error occurred while renewal token", err);
-      return res.status(500).json({ message: "Internal server error" });
-    }
-  };
+    return res.status(200).json({ accessToken });
+  } catch (err) {
+    console.log("Error occurred while renewal token", err);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};

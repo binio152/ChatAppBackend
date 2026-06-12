@@ -9,16 +9,15 @@ const server = express();
 
 const allowOrigins = [
   process.env.CLIENT_URL ?? "http://localhost:5173",
-  "http://192.168.1.5:5173/",
-  "http://192.168.16.1:5173/",
-  "http://192.168.126.1:5173/",
-  "http://192.168.1.5:5173/",
+  "http://192.168.1.7:5173",
+  "http://192.168.16.1:5173",
+  "http://192.168.126.1:5173",
 ];
+
 // middlewares
 server.use(
   cors({
     origin: allowOrigins,
-
     credentials: true,
   }),
 );
@@ -30,14 +29,14 @@ server.use(morgan("dev"));
 // public routes
 server.use("/api/auth", authRoute);
 
-// private routes
-server.use(protectedRoute);
-server.use("/api/", userRoute);
-
 // testing root
 server.get("/test", (req, res) => {
   res.send("Server is running ...");
 });
+
+// private routes
+server.use(protectedRoute);
+server.use("/api", userRoute);
 
 export { server };
 export default server;
