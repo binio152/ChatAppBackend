@@ -23,14 +23,6 @@ const friendRequestSchema = new mongoose.Schema(
   },
 );
 
-friendRequestSchema.pre("save", function (next) {
-  if (this.from.equals(this.to)) {
-    return next(new Error("Cannot send request to yourself"));
-  }
-
-  next();
-});
-
 friendRequestSchema.index({ from: 1, to: 1 }, { unique: true });
 friendRequestSchema.index({ from: 1 });
 friendRequestSchema.index({ to: 1 });
