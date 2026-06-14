@@ -59,7 +59,7 @@ export const acceptFriendRequest = async (req, res) => {
         .status(403)
         .json({ message: "You are not the recipient of this request" });
 
-    const friend = await Friend.create({
+    await Friend.create({
       userA: request.from,
       userB: request.to,
     });
@@ -100,7 +100,7 @@ export const declineFriendRequest = async (req, res) => {
     await FriendRequest.findByIdAndDelete(requestId);
 
     return res
-      .status(204)
+      .status(200)
       .json({ message: "Friend request declined successfully" });
   } catch (err) {
     console.log("Error occurred while declining request", err);

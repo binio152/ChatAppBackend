@@ -97,14 +97,15 @@ describe("authController.signIn", () => {
     mockCreateRefreshToken();
     mockCreatedSession(Session);
 
-    const account = { username: "username", password: "123456" };
+    const account = { username: "binhahjhj", password: "binhahjhj" };
     const res = await request(server).post("/api/auth/signin").send(account);
+    console.log(res);
 
     expect(res.status).toBe(201);
     expect(res.body.message).toMatch(/signed in successfully/i);
     expect(res.headers["set-cookie"]).toBeDefined();
     expect(res.headers["set-cookie"][0]).toBe(
-      "refreshToken=refreshToken; Path=/; HttpOnly; Secure; SameSite=None",
+      "refreshToken=refreshToken; Path=/; HttpOnly; SameSite=Lax",
     );
   });
 

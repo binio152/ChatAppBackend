@@ -8,16 +8,16 @@ export const mockHashedPassword = () => {
   bcrypt.hash = vi.fn().mockResolvedValue("hashedPassword");
 };
 
-export const mockNotExistingUser = (User) => {
-  vi.spyOn(User, "findOne").mockResolvedValue(null);
-};
-
 export const mockExistingUser = (User) => {
   vi.spyOn(User, "findOne").mockResolvedValue({
     _id: "123",
     username: "username",
     hashedPassword: "hashedPassword",
   });
+};
+
+export const mockNotExistingUser = (User) => {
+  vi.spyOn(User, "findOne").mockResolvedValue(null);
 };
 
 export const mockDBError = (User) => {

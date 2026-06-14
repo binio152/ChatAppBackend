@@ -74,7 +74,7 @@ export const signIn = async (req, res) => {
       httpOnly: true,
       secure: isProduction,
       sameSite: isProduction ? "none" : "lax",
-      maxAge: Number(process.env.REFRESH_TOKEN_TTL),
+      maxAge: process.env.REFRESH_TOKEN_TTL,
     });
 
     return res.status(201).json({
