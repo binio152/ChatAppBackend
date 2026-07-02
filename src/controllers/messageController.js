@@ -16,7 +16,7 @@ export const sendDirectMessage = async (req, res) => {
       conversation = await Conversation.findById(conversationId);
     }
 
-    if (!conversation) {
+    if (!conversationId) {
       conversation = await Conversation.create({
         type: "direct",
         participants: [
@@ -24,7 +24,7 @@ export const sendDirectMessage = async (req, res) => {
           { userId: recipientId, joinedAt: new Date() },
         ],
         lastMessageAt: new Date(),
-        unreadCount: new Map(),
+        unreadCounts: new Map(),
       });
     }
 
@@ -47,6 +47,17 @@ export const sendDirectMessage = async (req, res) => {
 
 export const sendGroupMessage = async (req, res) => {
   try {
+    const { conversationId, content } = req.body;
+    const senderId = req.user._id;
+    const conversation = req.conversation;
+
+    if (!content)
+      return res.status(400).json({ message: "Missing message content" });
+
+    const message = await Message.create({ conversationId, senderId, content });
+    updateConversationAfterCreateMessage(conversation, message, senderId);
+
+    return res.status(201).json({ message });
   } catch (err) {
     console.log("Error occurred while getting user send group message", err);
     return res.status(500).json({ message: "Internal server error" });
