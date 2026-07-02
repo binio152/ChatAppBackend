@@ -3,6 +3,7 @@ import authRoute from "./routes/authRoute.js";
 import userRoute from "./routes/userRoute.js";
 import friendRoute from "./routes/friendRoute.js";
 import messageRoute from "./routes/messageRoute.js";
+import conversationRoute from "./routes/conversationRoute.js";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import { protectedRoute } from "./middlewares/authMiddleware.js";
@@ -41,6 +42,7 @@ server.use(protectedRoute);
 server.use("/api/users", userRoute);
 server.use("/api/friends", friendRoute);
 server.use("/api/messages", messageRoute);
+server.use("/api/conversations", conversationRoute);
 
 export { server };
 export default server;
