@@ -1,5 +1,6 @@
-import Conversation from "../models/Conversation";
-import Message from "../models/Message";
+import Conversation from "../models/Conversation.js";
+import Message from "../models/Message.js";
+import { updateConversationAfterCreateMessage } from "../utils/messageHelper.js";
 
 export const sendDirectMessage = async (req, res) => {
   try {
@@ -32,6 +33,12 @@ export const sendDirectMessage = async (req, res) => {
       senderId,
       content,
     });
+
+    updateConversationAfterCreateMessage(conversation, message, senderId);
+
+    await conversation.save();
+
+    return res.status(201).json({ message });
   } catch (err) {
     console.log("Error occurred while getting user send direct message", err);
     return res.status(500).json({ message: "Internal server error" });

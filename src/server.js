@@ -2,6 +2,7 @@ import express from "express";
 import authRoute from "./routes/authRoute.js";
 import userRoute from "./routes/userRoute.js";
 import friendRoute from "./routes/friendRoute.js";
+import messageRoute from "./routes/messageRoute.js";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import { protectedRoute } from "./middlewares/authMiddleware.js";
@@ -39,6 +40,7 @@ server.get("/test", (req, res) => {
 server.use(protectedRoute);
 server.use("/api/users", userRoute);
 server.use("/api/friends", friendRoute);
+server.use("/api/messages", messageRoute);
 
 export { server };
 export default server;
