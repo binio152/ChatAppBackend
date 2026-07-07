@@ -114,12 +114,12 @@ export const getConversation = async (req, res) => {
 
       return {
         ...conversation.toObject(),
-        unreadCounts: conversation.unreadCount ?? {},
+        unreadCounts: conversation.unreadCounts ?? {},
         participants,
       };
     });
 
-    res.status(200).json({ formatted });
+    res.status(200).json({ conversations: formatted });
   } catch (err) {
     console.log("Error occurred while getting conversation", err);
     return res.status(500).json({ message: "Internal server error" });

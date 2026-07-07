@@ -38,7 +38,7 @@ export const sendDirectMessage = async (req, res) => {
 
     await conversation.save();
 
-    return res.status(201).json({ message });
+    return res.status(201).json({ message, conversation });
   } catch (err) {
     console.log("Error occurred while getting user send direct message", err);
     return res.status(500).json({ message: "Internal server error" });

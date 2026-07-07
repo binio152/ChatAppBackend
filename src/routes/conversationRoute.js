@@ -8,7 +8,7 @@ import {
 
 const router = Router();
 
-router.get("/:conversationId", getConversation);
+router.get("/", getConversation);
 router.get("/:conversationId/messages", getMessage);
 
 router.post("/", checkFriendship, createConversation);
