@@ -8,10 +8,9 @@ import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import { protectedRoute } from "./middlewares/authMiddleware.js";
 import cors from "cors";
+import { app, server } from "./socket/index.js";
 
-const server = express();
-
-const allowOrigins = [
+export const allowOrigins = [
   process.env.CLIENT_URL ?? "http://localhost:5173",
   "http://192.168.1.7:5173",
   "http://192.168.16.1:5173",
@@ -19,31 +18,31 @@ const allowOrigins = [
 ];
 
 // middlewares
-server.use(
+app.use(
   cors({
     origin: allowOrigins,
     credentials: true,
   }),
 );
-server.use(express.json());
-server.use(express.urlencoded({ extended: true }));
-server.use(cookieParser());
-server.use(morgan("dev"));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(morgan("dev"));
 
 // public routes
-server.use("/api/auth", authRoute);
+app.use("/api/auth", authRoute);
 
 // testing root
-server.get("/test", (req, res) => {
+app.get("/test", (req, res) => {
   res.send("Server is running ...");
 });
 
 // private routes
-server.use(protectedRoute);
-server.use("/api/users", userRoute);
-server.use("/api/friends", friendRoute);
-server.use("/api/messages", messageRoute);
-server.use("/api/conversations", conversationRoute);
+app.use(protectedRoute);
+app.use("/api/users", userRoute);
+app.use("/api/friends", friendRoute);
+app.use("/api/messages", messageRoute);
+app.use("/api/conversations", conversationRoute);
 
-export { server };
-export default server;
+export { app };
+export default app;
