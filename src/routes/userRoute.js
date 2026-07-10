@@ -1,8 +1,9 @@
 import { Router } from "express";
-import { getProfile } from "../controllers/userController.js";
+import { findByUsername, getProfile } from "../controllers/userController.js";
 
-const route = Router();
+const router = Router();
 
-route.get("/profile", getProfile);
+router.get("/profile", getProfile);
+router.get("/find", findByUsername);
 
-export default route;
+export default router;
