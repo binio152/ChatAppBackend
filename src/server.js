@@ -12,9 +12,11 @@ import { app, server } from "./socket/index.js";
 
 export const allowOrigins = [
   process.env.CLIENT_URL ?? "http://localhost:5173",
-  "http://192.168.1.7:5173",
+  "http://192.168.1.5:5173",
   "http://192.168.16.1:5173",
   "http://192.168.126.1:5173",
+  "http://192.168.1.2:5173",
+  "192.168.1.2:5173",
 ];
 
 // middlewares
