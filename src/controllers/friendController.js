@@ -92,10 +92,34 @@ export const declineFriendRequest = async (req, res) => {
     const request = await FriendRequest.findById(requestId);
     if (!request)
       return res.status(404).json({ message: "Friend request not found" });
-    if (request.to.toString() !== userId)
+    if (request.to.toString() !== userId.toString())
       return res
         .status(403)
         .json({ message: "You are not the recipient of this request" });
+
+    await FriendRequest.findByIdAndDelete(requestId);
+
+    return res
+      .status(200)
+      .json({ message: "Friend request declined successfully" });
+  } catch (err) {
+    console.log("Error occurred while declining request", err);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const cancelFriendRequest = async (req, res) => {
+  try {
+    const { requestId } = req.params;
+    const userId = req.user._id;
+
+    const request = await FriendRequest.findById(requestId);
+    if (!request)
+      return res.status(404).json({ message: "Friend request not found" });
+    if (request.from.toString() !== userId.toString())
+      return res
+        .status(403)
+        .json({ message: "You are not the sender of this request" });
 
     await FriendRequest.findByIdAndDelete(requestId);
 
@@ -112,7 +136,7 @@ export const getFriendLists = async (req, res) => {
   try {
     const userId = req.user._id;
 
-    const polulateFields = "_id displayName avatarUrl";
+    const polulateFields = "_id username displayName avatarUrl";
     const friendships = await Friend.find({
       $or: [{ userA: userId }, { userB: userId }],
     })
@@ -124,8 +148,8 @@ export const getFriendLists = async (req, res) => {
 
     const friendLists = friendships.map((relation) =>
       relation.userA._id.toString() === userId.toString()
-        ? relation.userA
-        : relation.userB,
+        ? relation.userB
+        : relation.userA,
     );
 
     return res.status(200).json({ friendLists });
@@ -140,12 +164,12 @@ export const getFriendRequestLists = async (req, res) => {
     const userId = req.user._id;
     const poluplateFields = "_id username displayName avatarUrl";
 
-    const [sendRequest, receivedRequest] = await Promise.all([
+    const [sendRequests, receivedRequests] = await Promise.all([
       FriendRequest.find({ from: userId }).populate("to", poluplateFields),
       FriendRequest.find({ to: userId }).populate("from", poluplateFields),
     ]);
 
-    return res.status(200).json({ sendRequest, receivedRequest });
+    return res.status(200).json({ sendRequests, receivedRequests });
   } catch (err) {
     console.log("Error occurred while getting friend request lists", err);
     return res.status(500).json({ message: "Internal server error" });
