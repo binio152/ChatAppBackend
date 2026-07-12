@@ -119,6 +119,6 @@ describe("messageController.sendDirectMessage", () => {
 
     expect(res.status).toHaveBeenCalledWith(201);
 
-    expect(res.json).toHaveBeenCalledWith({ message: fakeMessage });
+    expect(res.json).toHaveBeenCalledWith({ message: fakeMessage, conversation });
   });
 });

@@ -91,6 +91,12 @@ export const createConversation = async (req, res) => {
       participants,
     };
 
+    if (type === "group") {
+      memberIds.forEach((member) => {
+        io.to(member).emit("new-group", formatted);
+      });
+    }
+
     res.status(200).json({ conversation: formatted });
   } catch (err) {
     console.log("Error occurred while creating conversation", err);

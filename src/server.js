@@ -10,14 +10,8 @@ import { protectedRoute } from "./middlewares/authMiddleware.js";
 import cors from "cors";
 import { app, server } from "./socket/index.js";
 
-export const allowOrigins = [
-  process.env.CLIENT_URL ?? "http://localhost:5173",
-  "http://192.168.1.5:5173",
-  "http://192.168.16.1:5173",
-  "http://192.168.126.1:5173",
-  "http://192.168.1.2:5173",
-  "192.168.1.2:5173",
-];
+export const allowOrigins = [process.env.CLIENT_URL ?? "http://localhost:5173"];
+console.log(allowOrigins);
 
 // middlewares
 app.use(

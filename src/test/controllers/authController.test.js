@@ -99,7 +99,6 @@ describe("authController.signIn", () => {
 
     const account = { username: "binhahjhj", password: "binhahjhj" };
     const res = await request(server).post("/api/auth/signin").send(account);
-    console.log(res);
 
     expect(res.status).toBe(201);
     expect(res.body.message).toMatch(/signed in successfully/i);
